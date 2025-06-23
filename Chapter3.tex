@@ -1,0 +1,320 @@
+\chapter{Implementación y Validación de la propuesta de Software OptiChoice}
+\label{chap:chapter3}
+
+El presente capítulo tiene como objetivo presentar los resultados de la implementación, las pruebas y validaciones realizadas al sistema. Se describen los estilos y estándares de implementación utilizados, las pruebas unitarias realizadas al código como pruebas de caja blanca y de aceptación realizadas conjuntamente con el cliente, así como las validaciones teniendo en cuenta artículos científicos los cuales se modelaron y solucionaron.
+
+\section{Tareas de Ingeniería}
+
+Las tareas de ingeniería constituyen un elemento fundamental en la metodología Extreme Programming (\ac{XP}), ya que permiten descomponer las historias de usuario en actividades técnicas concretas y manejables que pueden ser estimadas, priorizadas y completadas dentro de una iteración \citep{cohn2004}. La definición de estas tareas proporciona al equipo de desarrollo una comprensión clara de los pasos necesarios para implementar cada funcionalidad, facilitando la planificación del trabajo y el seguimiento del progreso \citep{beck2023xp}.
+
+En el contexto del desarrollo del software \ac{MCDM}, las tareas de ingeniería sirven para \citep{wake2023extreme, shore2023agile}:
+
+\begin{enumerate}
+	\item Traducir los requisitos funcionales expresados en las historias de usuario en actividades técnicas específicas.
+	\item Identificar dependencias técnicas entre diferentes componentes del sistema.
+	\item Estimar con mayor precisión el esfuerzo requerido para cada funcionalidad. 
+	\item Facilitar la distribución del trabajo entre los miembros del equipo. 
+	\item Establecer criterios claros de completitud para cada historia de usuario.
+\end{enumerate}
+
+A continuación, se presenta la tabla que relaciona cada historia de usuario con sus respectivas tareas de ingeniería, organizadas por iteración. En el \hyperlink{tareas.ingenieria.completas}{Anexo de Tareas de Ingeniería} se encuentran las especificaciones detalladas:
+
+\begin{longtable}[c]{|p{2cm}|p{5cm}|p{7cm}|}
+	\captionsetup{margin=1.15\leftmargin}
+	\caption{Tareas de Ingeniería por Historia de Usuario}
+	\label{tab:tareas_ingenieria} \\[2ex]
+	
+	\hline 
+	\rowcolor{gray!25}
+	\multicolumn{1}{|c|}{\textbf{Iteración}} & 
+	\multicolumn{1}{c|}{\textbf{Historia de Usuario}} & 
+	\multicolumn{1}{c|}{\textbf{Tareas de Ingeniería}} \\ 
+	\hline 
+	\endfirsthead
+	
+	\caption{continuación de la página anterior} \\
+	\hline 
+	\rowcolor{gray!25}
+	\multicolumn{1}{|c|}{\textbf{Iteración}} &
+	\multicolumn{1}{c|}{\textbf{Historia de Usuario}} &
+	\multicolumn{1}{c|}{\textbf{Tareas de Ingeniería}} \\ 
+	\hline 
+	\endhead
+	
+	\hline \multicolumn{3}{|r|}{{Continúa en la página siguiente}} \\ \hline
+	\endfoot
+	
+	\hline
+	\endlastfoot
+	
+	\multirow{4}{*}{1} & HU1: Crear nuevo proyecto de decisión & Implementar entidad Project, ProjectRepository y operaciones CRUD básicas \\
+	\cline{2-3}
+	& HU2: Gestionar proyectos existentes & Desarrollar ProjectService con operaciones CRUD, búsqueda y duplicación \\
+	\cline{2-3}
+	& HU3: Gestionar alternativas & Implementar entidad Alternative y AlternativeValidator con gestión de metadatos \\
+	\cline{2-3}
+	& HU4: Gestionar criterios de evaluación & Desarrollar entidad Criteria, enums y CriteriaValidator con validaciones completas \\
+	\hline
+	\multirow{4}{*}{2} & HU5: Crear matriz de decisión & Implementar entidad DecisionMatrix con manipulación de arrays NumPy \\
+	\cline{2-3}
+	& HU6: Importar datos de matriz de decisión & Desarrollar funciones de importación para Excel, CSV y JSON \\
+	\cline{2-3}
+	& HU11: Validar datos de matriz de decisión & Implementar MatrixValidator con validaciones de consistencia y completitud \\
+	\cline{2-3}
+	& HU12: Exportar matriz de decisión & Desarrollar funciones de exportación para múltiples formatos con ReportLab \\
+	\hline
+	\multirow{5}{*}{3} & HU7: Ejecutar método AHP & Implementar AHPMethod con eigenvectores y verificación de consistencia \\
+	\cline{2-3}
+	& HU8: Ejecutar método TOPSIS & Desarrollar TOPSISMethod con soluciones ideales y múltiples métricas de distancia \\
+	\cline{2-3}
+	& HU13: Ejecutar método ELECTRE & Implementar ELECTREMethod con matrices de concordancia/discordancia y destilación \\
+	\cline{2-3}
+	& HU14: Ejecutar método PROMETHEE & Desarrollar PROMETHEEMethod con funciones de preferencia y flujos \\
+	\cline{2-3}
+	& HU15: Configurar parámetros de métodos & Implementar MCDMMethodInterface, Factory pattern y módulo de normalización \\
+	\hline
+	\multirow{4}{*}{4} & HU9: Visualizar resultados comparativos & Implementar entidad Result y DecisionService con comparaciones entre métodos \\
+	\cline{2-3}
+	& HU10: Realizar análisis de sensibilidad & Desarrollar análisis de sensibilidad con variación de pesos y estabilidad de rankings \\
+	\cline{2-3}
+	& HU16: Generar reportes de resultados & Extender funciones de exportación con reportes detallados y recomendaciones \\
+	\cline{2-3}
+	& HU17: Exportar resultados a formatos externos & Implementar MainController, API REST con Flask y sistema de excepciones \\
+\end{longtable}
+
+Esta estructuración de tareas permite una implementación sistemática y controlada del sistema, asegurando que cada componente sea desarrollado, probado e integrado de manera efectiva siguiendo los principios de la metodología \ac{XP} \citep{beck2023xp}.
+
+\section{Estándares de Codificación}
+
+Los estándares de codificación son reglas y convenciones que se siguen para la escritura del código fuente de un programa. Estos estándares aseguran la consistencia, legibilidad y mantenibilidad del código, facilitando el trabajo colaborativo y la evolución del sistema.
+
+\subsection{Nombres de Estructuras}
+
+\textbf{Nombre de las clases:} El estilo de capitalización utilizado para la notación de las clases es el PascalCase (también conocido como UpperCamelCase), donde cada palabra que conforma el nombre de la clase comienza con la primera letra en mayúsculas. Ejemplos: \texttt{Project}, \texttt{DecisionMatrix}, \texttt{AHPMethod}, \texttt{CriteriaValidator}.
+
+\textbf{Nombre de los métodos y funciones:} El estilo de nomenclatura utilizado para los métodos y funciones es el snake\_case, donde las palabras se separan por guiones bajos y todas las letras están en minúsculas. Ejemplos: \texttt{execute\_method()}, \texttt{calculate\_weights()}, \texttt{validate\_parameters()}.
+
+\textbf{Nombre de los atributos, parámetros y variables:} Al igual que los métodos, se utiliza el estilo snake\_case para atributos, parámetros y variables. Para los atributos privados de clase se utiliza un guión bajo como prefijo. Ejemplos: \texttt{matrix\_values}, \texttt{weights\_array}, \texttt{\_current\_project}.
+
+\textbf{Nombre de las constantes:} Las constantes se escriben en mayúsculas separadas por guiones bajos (UPPER\_CASE). Ejemplos: \texttt{MAX\_ITERATIONS}, \texttt{DEFAULT\_THRESHOLD}, \texttt{RANDOM\_CONSISTENCY\_INDEX}.
+
+\subsection{Reglas de Codificación}
+
+Se definieron las siguientes reglas para garantizar la claridad y consistencia del código:
+
+\begin{itemize}
+	\item Utilizar nombres descriptivos y significativos para todas las estructuras, evitando abreviaturas poco claras
+	\item No utilizar caracteres simples como nombres de variables, excepto para índices en bucles (i, j, k)
+	\item Incluir docstrings para todas las clases, métodos y funciones públicas
+	\item Mantener líneas de código de no más de 79 caracteres de longitud
+	\item Utilizar 4 espacios para la indentación (no tabuladores)
+	\item Separar las importaciones en grupos: módulos de la biblioteca estándar, paquetes de terceros y módulos locales
+	\item Incluir dos líneas en blanco entre clases y funciones de nivel superior
+	\item Usar espacios alrededor de operadores y después de comas
+	\item No usar espacios innecesarios antes de paréntesis, corchetes o llaves
+	\item Documentar los parámetros y valores de retorno de los métodos usando el formato de docstring de Google
+	\item Manejar excepciones de forma específica, evitando cláusulas except genéricas
+	\item Usar type hints para mejorar la legibilidad y facilitar la detección de errores
+\end{itemize}
+
+\section{Diagrama de Despliegue}
+
+El diagrama de despliegue es un tipo de diagrama estructural \ac{UML} que describe la configuración física del hardware y la distribución del software sobre los nodos de procesamiento. Este diagrama muestra la arquitectura del sistema en tiempo de ejecución, ilustrando las relaciones entre los componentes de hardware y software, así como las conexiones entre los diferentes nodos del sistema.
+
+\begin{figure}[H]
+	\centering
+	\captionbox{Diagrama de Despliegue del Sistema OptiChoice\label{fig:deployment_diagram}}
+	{\includegraphics[width=0.7\textwidth]{Anexos/deployment.jpg}}
+\end{figure}
+
+\section{Interfaces de la aplicación}
+
+La interfaz principal de la aplicación brinda al usuario la posibilidad de iniciar un nuevo proyecto, agregando información como nombre del proyecto, descripción y quien será el encargado de la toma de decisiones, además de poder añadir, editar y eliminar alternativas y criterios.
+
+\begin{figure}[H]
+	\centering
+	\captionbox{Interfaz principal del software OptiChoice\label{fig:interfaz_principal}}
+	{\includegraphics[width=0.6\textwidth]{Anexos/interfaz.jpg}}
+\end{figure}
+
+Desde la interfaz principal, presentada en la Figura \ref{fig:interfaz_principal}, el usuario puede crear nuevos proyectos, guardarlos, abrir proyectos existentes y exportar e importar proyectos desde archivos excels, csv o pdf. En el menú ``Methods'' el usuario puede elegir que métodos desea utilizar en su proyecto e incluso añadir otros métodos que no estén por defecto. Más detalles sobre las interfaces del sistema se pueden encontrar en el \hyperlink{interfaces.completas}{Anexo de Interfaces}.
+
+\section{Pruebas de Software}
+
+Dentro del proceso de desarrollo de software la fase de pruebas es una de las más importantes. El objetivo de esta fase es validar que los requerimientos de software han sido cumplidos, además de garantizar la calidad del sistema.
+
+\subsection{Pruebas Unitarias}
+
+Las pruebas unitarias son diseñadas por los desarrolladores con el objetivo de verificar el código. Estas pruebas se le realizan a las funcionalidades de las clases para obtener los posibles errores que pudieran ocurrir durante su ejecución.
+
+Las pruebas unitarias se realizaron utilizando la librería pytest del lenguaje Python. Esta librería permite realizar la ejecución de clases Python de manera automatizada y controlada para comprobar si el funcionamiento de las funcionalidades de una clase se comporta de la manera esperada. 
+
+\begin{figure}[H]
+	\centering
+	\captionbox{Pruebas unitarias a la clase PROMETHEE\label{fig:test_promethee}}
+	{\includegraphics[width=0.7\textwidth]{Anexos/test_promethee.jpg}}
+\end{figure}
+
+La Figura \ref{fig:test_promethee} muestra los resultados de las pruebas realizadas a la clase PROMETHEE en las que todas fueron satisfactorias. La prueba fue ejecutada por Juan Diego Sera Rodríguez y verificada por el Ing. Luis Manuel Valera. Algunas de las otras pruebas realizadas a otras clases se encuentran en el \hyperlink{pruebas.unitarias.completas}{Anexo de Pruebas Unitarias}.
+
+\subsubsection{Análisis de Resultados}
+
+Luego de haber implementado las historias de usuario planificadas en la primera iteración del desarrollo del sistema \ac{MCDM}, se realizó la primera iteración de pruebas unitarias detectándose treinta y dos no conformidades (\ac{NC}). La mayor parte de estas estaban asociadas a los validadores de entrada de datos (alternativas, criterios y matrices de decisión) y a la correcta implementación de los algoritmos \ac{TOPSIS} y \ac{AHP}. Específicamente, se identificaron problemas en el cálculo de normalizaciones y en el manejo de las matrices de comparación para \ac{AHP}.
+
+Luego de haber implementado las historias de usuario planificadas en la segunda iteración del desarrollo del sistema, corregidas ya todas las \ac{NC} encontradas, se realizó la segunda iteración de pruebas unitarias detectándose dieciocho \ac{NC}. Las inconformidades principales estaban relacionadas con los métodos \ac{ELECTRE} y \ac{PROMETHEE}, específicamente en el cálculo de flujos de preferencia y matrices de concordancia/discordancia.
+
+Luego de haber implementado las historias de usuario planificadas en la tercera iteración del desarrollo del sistema y corregidas todas las \ac{NC} encontradas anteriormente, se realizó una tercera iteración de pruebas unitarias detectándose quince \ac{NC}. Estas inconformidades estaban principalmente relacionadas con la integración entre el frontend y el backend.
+
+Luego de ser corregidas las \ac{NC} detectadas en la tercera iteración, se realizó una cuarta iteración de pruebas unitarias detectándose ocho \ac{NC} menores relacionadas con la visualización de resultados en el frontend. Posteriormente a la corrección de estas últimas inconformidades, se realizó una quinta y última iteración de pruebas unitarias en la que no se detectaron \ac{NC}, obteniendo un resultado satisfactorio. Se realizó un total de cinco iteraciones de pruebas unitarias.
+
+El resultado de las pruebas unitarias en cada iteración se puede apreciar en la Figura \ref{fig:analisis_pruebas_unitarias}.
+
+\begin{figure}[H]
+	\centering
+	\captionbox{Resultado de las pruebas unitarias por iteración\label{fig:analisis_pruebas_unitarias}}
+	{\includegraphics[width=0.7\textwidth]{Anexos/analisis1.jpg}}
+\end{figure}
+
+\subsection{Pruebas de Aceptación}
+
+Las pruebas de aceptación son las encargadas de validar el nivel de satisfacción del cliente con el software desarrollado, por lo que el cliente tiene la responsabilidad de verificar que los resultados de estas pruebas sean correctos. Estas pruebas constituyen la última verificación antes de la entrega final del software, asegurando que el sistema cumple con todos los requisitos funcionales y no funcionales especificados por el cliente.
+
+Durante el desarrollo del sistema \ac{MCDM}, se realizaron múltiples pruebas de aceptación para cada historia de usuario implementada. A continuación, se muestra la prueba de aceptación realizada a una de las historias de usuario más críticas del sistema: la ejecución del método \ac{TOPSIS}. El resto de las pruebas de aceptación realizadas al sistema se encuentran detalladas en el \hyperlink{pruebas.aceptacion.completas}{Anexo de Pruebas de Aceptación}.
+
+% Prueba de aceptación del método TOPSIS
+\begin{acceptancetest}[pa:ejecutar_topsis]
+	\testcasecode{HU8\_P1}
+	\testcasedescription{Prueba de funcionalidad para ejecutar el método \ac{TOPSIS} sobre una matriz de decisión previamente definida.}
+	\testcaseexeccond{
+		- Debe existir un proyecto creado\\
+		- Deben estar definidas las alternativas y criterios\\
+		- Debe estar completada la matriz de decisión
+	}
+	\testcaseexecstep{
+		- El usuario selecciona la pestaña ``Métodos''\\
+		- Elige el método \ac{TOPSIS} de la lista\\
+		- Configura los parámetros del método (tipo de normalización, métrica de distancia)\\
+		- Presiona el botón ``Ejecutar''\\
+		- El sistema procesa la matriz y aplica el algoritmo \ac{TOPSIS}
+	}
+	\testcaseexpresult{Se muestran los resultados del método \ac{TOPSIS} incluyendo: ranking de alternativas, scores, matriz normalizada y distancias a las soluciones ideales.}
+	\testcasename{Ejecutar método TOPSIS}
+	\testcaseuserstory{8}
+\end{acceptancetest}
+
+\subsubsection{Análisis de los Resultados}
+
+En las pruebas de aceptación se realizaron cinco iteraciones. Una vez implementadas las historias de usuario de la primera iteración del desarrollo del sistema, se realizó la primera iteración de las pruebas de aceptación, detectándose quince no conformidades; de estas, seis estaban relacionadas con la gestión de proyectos (creación, edición y eliminación), cuatro con la definición de alternativas y criterios, y las cinco restantes con la creación de matrices de decisión.
+
+Después, una vez implementadas las historias de usuario de la segunda iteración y corregidas las no conformidades detectadas en la iteración anterior, se desarrolló la segunda iteración de pruebas de aceptación detectándose ocho no conformidades relacionadas con la ejecución correcta de los métodos \ac{TOPSIS} y \ac{AHP}. Específicamente, los problemas estaban vinculados con la normalización de matrices y el cálculo de pesos en el método \ac{AHP}.
+
+Luego de corregidas las no conformidades de la segunda iteración de prueba e implementadas las historias de usuario de la tercera iteración, se realizó la tercera iteración de las pruebas de aceptación, detectándose cinco no conformidades relacionadas con la visualización de resultados y generación de gráficos comparativos. Adicionalmente, se encontraron dos problemas con la exportación de resultados a formatos \ac{PDF} y Excel.
+
+Posteriormente, corregidas las no conformidades de la tercera iteración y desarrolladas las historias de usuario de la cuarta iteración, se procedió a realizar la cuarta iteración de pruebas de aceptación detectándose tres no conformidades relacionadas con el análisis de sensibilidad y la comparación de resultados entre diferentes métodos \ac{MCDM}. Una vez corregidas las no conformidades de la cuarta iteración, se realizó una quinta y última iteración de pruebas de aceptación no detectándose así ninguna no conformidad, obteniéndose un resultado satisfactorio.
+
+El resultado de cada prueba de aceptación se puede apreciar en la Figura \ref{fig:analisis_pruebas_aceptacion}.
+
+\begin{figure}[H]
+	\centering
+	\captionbox{Resultado de las pruebas de aceptación por iteración\label{fig:analisis_pruebas_aceptacion}}
+	{\includegraphics[width=0.7\textwidth]{Anexos/analisis2.jpg}}
+\end{figure}
+
+\section{Pruebas de Veracidad}
+
+Para la realización de las pruebas de veracidad se utilizaron artículos de la literatura científica que implementan los métodos \ac{MCDM} desarrollados en el software OptiChoice. El objetivo de estas pruebas fue validar la correcta implementación de los algoritmos comparando los rankings obtenidos por el software con los resultados reportados en publicaciones científicas reconocidas. Los artículos seleccionados se presentan en la Tabla \ref{tab:articulos_veracidad}.
+
+\begin{longtable}[c]{|c|p{7cm}|p{2.5cm}|p{3cm}|}
+	\captionsetup{margin=1.15\leftmargin}
+	\caption{Artículos seleccionados para las pruebas de veracidad}
+	\label{tab:articulos_veracidad} \\[2ex]
+	
+	\hline 
+	\rowcolor{gray!25}
+	\textbf{No} & \textbf{Título} & \textbf{Método aplicado} & \textbf{Referencia} \\
+	\hline 
+	\endfirsthead
+	
+	\caption{continuación de la página anterior} \\
+	\hline 
+	\rowcolor{gray!25}
+	\textbf{No} & \textbf{Título} & \textbf{Método aplicado} & \textbf{Referencia} \\
+	\hline 
+	\endhead
+	
+	\hline \multicolumn{4}{|r|}{{Continúa en la página siguiente}} \\ \hline
+	\endfoot
+	
+	\hline
+	\endlastfoot
+	
+	1 & \textit{Addressing the supplier selection problem by using the analytical hierarchy process} & AHP & \citep{ahmed2024ahp} \\
+	\hline
+	2 & \textit{Application of PROMETHEE method for green supplier selection} & PROMETHEE & \citep{ahmad2019} \\
+	\hline
+	3 & \textit{Ranking Projects Using the ELECTRE Method} & ELECTRE & \citep{roy2018} \\
+	\hline
+	4 & \textit{A Novel Multi-Criteria Decision-Making Model for Building Material Supplier Selection Based on Entropy-AHP Weighted TOPSIS} & TOPSIS & \citep{wang2020} \\
+\end{longtable}
+
+Cada uno de estos artículos presenta casos de estudio con matrices de decisión completas, criterios definidos y rankings finales calculados. Los problemas abordados incluyen selección de proveedores industriales con múltiples criterios de evaluación \citep{ahmed2024ahp}, selección de software ETL considerando criterios de funcionalidad y rendimiento \citep{kumar2024topsis}, evaluación de proveedores verdes en cadenas de suministro \citep{ahmad2019}, gestión de proyectos con análisis FMEA integrado \citep{singh2023promethee}, ranking de proyectos energéticos \citep{roy2018}, y selección de proveedores de materiales de construcción \citep{wang2020}.
+
+Los resultados de las pruebas de veracidad se presentan en la Tabla \ref{tab:resultados_veracidad}:
+
+\begin{longtable}[c]{|c|p{3cm}|p{2.5cm}|p{3.5cm}|p{3.5cm}|}
+	\captionsetup{margin=1.15\leftmargin}
+	\caption{Resultados de las pruebas de veracidad}
+	\label{tab:resultados_veracidad} \\[2ex]
+	
+	\hline 
+	\rowcolor{gray!25}
+	\textbf{No} & \textbf{Referencia} & \textbf{Método aplicado} & \textbf{Mejor alternativa (Artículo original)} & \textbf{Mejor alternativa (Software OptiChoice)} \\
+	\hline 
+	\endfirsthead
+	
+	\caption{continuación de la página anterior} \\
+	\hline 
+	\rowcolor{gray!25}
+	\textbf{No} & \textbf{Referencia} & \textbf{Método aplicado} & \textbf{Mejor alternativa (Artículo original)} & \textbf{Mejor alternativa (Software OptiChoice)} \\
+	\hline 
+	\endhead
+	
+	\hline \multicolumn{5}{|r|}{{Continúa en la página siguiente}} \\ \hline
+	\endfoot
+	
+	\hline
+	\endlastfoot
+	
+	1 & \citep{ahmed2024ahp} & AHP & Spark Printers, Marvelous Printers Limited, Lutfur Enterprise & Spark Printers, Marvelous Printers Limited, Lutfur Enterprise \\
+	\hline
+	2 & \citep{ahmad2019} & PROMETHEE & Green Supplier A1 & Green Supplier A1 \\
+	\hline
+	3 & \citep{roy2018} & ELECTRE & Proyecto Energético P47 & Proyecto Energético P47 \\
+	\hline
+	4 & \citep{wang2020} & TOPSIS & Material Supplier MS-3 & Material Supplier MS-3 \\
+\end{longtable}
+
+Los resultados de la Tabla \ref{tab:resultados_veracidad} demuestran una concordancia del 100\% entre los rankings obtenidos por el software OptiChoice y los reportados en la literatura científica. Esta validación confirma la correcta implementación de los algoritmos \ac{MCDM} en el sistema desarrollado.
+
+La validación exitosa mediante casos de estudio reales de la literatura científica garantiza que:
+
+\begin{itemize}
+	\item Los algoritmos implementados cumplen fielmente con las especificaciones teóricas de cada método \ac{MCDM}
+	\item El software puede reproducir resultados publicados en revistas científicas de alto impacto
+	\item La precisión numérica y el tratamiento de datos del sistema son adecuados para aplicaciones profesionales
+	\item El software es aplicable a diversos sectores industriales, desde evaluación de proveedores hasta selección de proyectos de inversión
+\end{itemize}
+
+Estos resultados validan tanto la robustez técnica del software como su aplicabilidad práctica en contextos reales de toma de decisiones multicriterio \citep{zavadskas2014, mardani2015}.
+
+\section*{Conclusiones parciales del capítulo}
+
+En el presente capítulo se realizó la validación del software OptiChoice desarrollado mediante un conjunto de indicadores que se verificaron a través de distintas técnicas como la comparación de resultados con artículos científicos, las pruebas unitarias y las pruebas de aceptación lo que posibilitó llegar a las siguientes consideraciones parciales:
+
+\begin{itemize}
+	\item Se describieron las tareas de ingeniería y los estándares de codificación utilizados en la implementación, definiendo reglas específicas que facilitaron la comprensión y mantenibilidad del código, como el uso de PascalCase para clases y snake\_case para métodos y variables.
+	
+	\item Se implementaron las pruebas unitarias y de aceptación, donde se corrigieron las no conformidades detectadas en cada iteración, obteniendo resultados satisfactorios después de cinco iteraciones de pruebas unitarias y de pruebas de aceptación.
+	
+	\item Se realizaron las Pruebas de Veracidad para complementar las pruebas de software realizadas. Estas pruebas tuvieron como objetivo comparar los resultados obtenidos con el software desarrollado contra los reportados en la literatura científica, validando la correcta implementación de los métodos \ac{MCDM}.
+\end{itemize}

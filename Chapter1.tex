@@ -1,0 +1,394 @@
+\chapter{Fundamentos y Referentes sobre los Software de Toma de Decisiones}
+\label{chap:chapter1}
+
+La toma de decisiones en entornos complejos requiere herramientas especializadas que permitan evaluar múltiples criterios de manera objetiva. En este capítulo se presentan los fundamentos teóricos de la toma de decisiones multicriterio (\ac{MCDM}), se analizan los métodos más utilizados en la industria y se examina el estado del arte en software especializado. El objetivo es establecer la base conceptual que justifica el desarrollo de una solución informática optimizada para mejorar los procesos de decisión.
+
+\section{La toma de decisiones en problemas complejos con múltiples criterios}
+
+La toma de decisiones en problemas complejos es un proceso que involucra la evaluación de múltiples alternativas bajo la consideración de varios criterios, a menudo conflictivos entre sí \citep{cinelli2021, steyvers2024}. Estos problemas se caracterizan por su alta dimensionalidad, es decir, la presencia de un gran número de variables, criterios y alternativas, lo que dificulta su resolución mediante métodos tradicionales \citep{keeney1993, roy1996, berthet2021}.
+
+\subsection{Proceso de toma de decisiones}
+
+El proceso de toma de decisiones es una actividad fundamental en diversos ámbitos, desde la gestión empresarial hasta la planificación estratégica en organizaciones \citep{simon1960, ali2023}. Este proceso implica seleccionar una alternativa entre varias opciones disponibles, basándose en un análisis sistemático de los criterios relevantes. En contextos complejos, donde intervienen múltiples factores y \textit{stakeholders}, el proceso de toma de decisiones adquiere una mayor relevancia y requiere un enfoque estructurado \citep{freeman1984}.
+
+Este proceso puede dividirse en varias etapas:
+
+\begin{enumerate}
+	\item \textbf{Identificación del Problema}: El primer paso es reconocer y definir claramente el problema que requiere una decisión. Esto implica entender el contexto, los objetivos y las limitaciones mediante enfoques estructurados que consideren la complejidad inherente de los sistemas modernos \citep{sharma2023}.
+	
+	\item \textbf{Recopilación de Información}: Una vez definido el problema, se recopila información necesaria para evaluar las alternativas. Esto incluye datos cuantitativos y cualitativos, utilizando tecnologías avanzadas de análisis de datos y sistemas de información integrados \citep{zhang2024}.
+	
+	\item \textbf{Generación de Alternativas}: Se identifican las posibles soluciones o alternativas al problema, empleando técnicas modernas de creatividad y análisis sistemático \citep{liu2023}.
+	
+	\item \textbf{Evaluación de Alternativas}: Las alternativas se evalúan en función de los criterios definidos usando métodos multicriterio (\ac{MCDM}) para ponderar y comparar las opciones \citep{roy1996}.
+	
+	\item \textbf{Selección de la Mejor Alternativa}: Se selecciona la alternativa que mejor satisface los criterios y objetivos \citep{keeney1993}.
+	
+	\item \textbf{Implementación y Seguimiento}: Se implementa la alternativa seleccionada y se monitorean los resultados mediante sistemas de seguimiento en tiempo real \citep{chen2024}.
+\end{enumerate}
+
+Los problemas de decisión suelen involucrar criterios diversos que pueden ser conflictivos entre sí, como costos, calidad, eficiencia y sostenibilidad. La dificultad radica en equilibrar estos criterios para seleccionar la mejor alternativa posible.
+
+\subsection{Naturaleza de la toma de decisiones en entornos con múltiples criterios}
+
+La toma de decisiones en entornos con múltiples criterios implica la evaluación de diversas alternativas considerando factores que pueden ser tanto cuantitativos como cualitativos \citep{roy1996}. Para estructurar un problema de decisión multicriterio, es fundamental definir los elementos clave:
+
+\begin{itemize}
+	\item \textbf{Alternativas (A)}: Conjunto de opciones entre las cuales se debe seleccionar: $A = \{a_1, a_2, a_3, \ldots, a_m\}$ \citep{keeney1993}.
+	
+	\item \textbf{Criterios (C)}: Factores que influyen en la evaluación de las alternativas: $C = \{c_1, c_2, c_3, \ldots, c_n\}$ \citep{taherdoost2023}.
+	
+	\item \textbf{Ponderaciones (W)}: Asignación de importancia relativa a cada criterio: $W = \{w_1, w_2, w_3, \ldots, w_n\}$ \citep{saaty1980}.
+\end{itemize}
+
+Matemáticamente, una decisión multicriterio puede representarse mediante una matriz de decisión \textbf{D}, donde cada alternativa $A_{i}$ es evaluada bajo $n$ criterios:
+
+\[
+D = \begin{bmatrix}
+	d_{11} & d_{12} & \ldots & d_{1n} \\
+	d_{21} & d_{22} & \ldots & d_{2n} \\
+	\vdots & \vdots & \ddots & \vdots \\
+	d_{m1} & d_{m2} & \ldots & d_{mn} \\
+\end{bmatrix}
+\]
+
+Donde:
+\begin{itemize}
+	\item $d_{ij}$ representa la evaluación de la alternativa $A_i$ con respecto al criterio $C_{j}$
+	\item $m$ es el número de alternativas
+	\item $n$ es el número de criterios
+\end{itemize}
+
+Los métodos \ac{MCDM} permiten transformar esta matriz en una representación que facilite la priorización de alternativas. Algunos de los enfoques más utilizados incluyen:
+
+\begin{enumerate}
+	\item \textbf{Normalización de Valores}: Transformar los valores de la matriz a una escala común \citep{hwang1981}: 
+	\[r_{ij} = \frac{d_{ij}}{\sqrt{\sum_{i=1}^{m} d_{ij}^2}}\]
+	
+	\item \textbf{Asignación de Pesos}: Los pesos $w_{j}$ se asignan a cada criterio para reflejar su importancia relativa \citep{saaty1980}.
+	
+	\item \textbf{Agregación de Resultados}: Los valores normalizados y ponderados se combinan para obtener una puntuación global \citep{roy1996}.
+\end{enumerate}
+
+\subsection{Retos y dificultades en la toma de decisiones manual}
+
+La toma de decisiones manual en entornos multicriterio presenta diversas dificultades que pueden comprometer la calidad y eficiencia del proceso decisional \citep{steyvers2024, taherdoost2023}. Entre los principales retos se encuentran la subjetividad en la evaluación de criterios, la dificultad en el manejo de grandes volúmenes de datos y la falta de herramientas analíticas que permitan un análisis exhaustivo.
+
+En la Tabla \ref{tab:problemas_manuales} se presenta una comparación de los principales problemas encontrados en la toma de decisiones manual:
+
+\begin{table}[H]
+	\centering
+	\captionbox{Comparación entre los principales problemas de la toma de decisiones\label{tab:problemas_manuales}}
+	{
+		\begin{tabular}{|p{3cm}|p{5cm}|p{5cm}|}
+			\hline
+			\textbf{Problema} & \textbf{Descripción} & \textbf{Impacto} \\
+			\hline
+			Subjetividad & Evaluación basada en percepción individual sin validación objetiva & Puede generar decisiones inconsistentes \\
+			\hline
+			Complejidad matemática & Dificultad para realizar cálculos precisos sin herramientas especializadas & Aumenta la probabilidad de errores \\
+			\hline
+			Gestión de grandes volúmenes & Difícil de organizar y analizar cuando hay muchas alternativas y criterios & Retrasa el proceso de toma de decisiones \\
+			\hline
+			Falta de análisis de sensibilidad & Imposibilidad de evaluar cómo cambios en los datos afectan la decisión final & Reduce la robustez de la decisión \\
+			\hline
+		\end{tabular}
+	}
+\end{table}
+
+\subsection{Beneficios del uso de software para apoyar la toma de decisiones}
+
+El uso de software especializado en la toma de decisiones multicriterio ofrece numerosas ventajas en comparación con los métodos manuales, optimizando la precisión, eficiencia y objetividad en la selección de alternativas \citep{madanchian2024, keenan2024}. Los principales beneficios incluyen:
+
+\begin{itemize}
+	\item \textbf{Reducción de la subjetividad}: El uso de algoritmos estructurados permite minimizar la influencia de sesgos cognitivos y errores humanos \citep{azhar2021}.
+	
+	\item \textbf{Automatización de cálculos complejos}: Métodos como \ac{AHP}, \ac{TOPSIS} y \ac{ELECTRE} requieren operaciones matemáticas sofisticadas que un software \ac{MCDM} permite realizar de manera automática \citep{yenugula2024}.
+	
+	\item \textbf{Gestión eficiente de grandes volúmenes de datos}: Las herramientas \ac{MCDM} facilitan el procesamiento y análisis de múltiples criterios y alternativas \citep{sharma2023dss}.
+	
+	\item \textbf{Análisis de sensibilidad}: Un software avanzado permite realizar análisis de sensibilidad para evaluar cómo los cambios en los criterios afectan los resultados \citep{pelissari2022}.
+\end{itemize}
+
+En la Tabla \ref{tab:comparacion_metodos} se muestra una comparación entre los métodos manuales y el uso de software:
+
+\begin{table}[H]
+	\centering
+	\captionbox{Comparación entre métodos manuales y uso de software\label{tab:comparacion_metodos}}
+	{
+		\begin{tabular}{|p{3cm}|p{5cm}|p{5cm}|}
+			\hline
+			\textbf{Aspecto} & \textbf{Método Manual} & \textbf{Uso de Software MCDM} \\
+			\hline
+			Precisión de cálculos & Baja, propensa a errores & Alta, con automatización total \\
+			\hline
+			Tiempo de procesamiento & Elevado & Rápido y eficiente \\
+			\hline
+			Manejo de múltiples criterios & Limitado & Ilimitado, soporta grandes volúmenes \\
+			\hline
+			Análisis de sensibilidad & Difícil de realizar & Integrado y automatizado \\
+			\hline
+			Generación de reportes & Manual y tedioso & Automática y estructurada \\
+			\hline
+		\end{tabular}
+	}
+\end{table}
+
+\section{Métodos de Toma de Decisiones Multicriterio (MCDM)}
+
+Los métodos de toma de decisiones multicriterio proporcionan un marco analítico estructurado para evaluar y seleccionar alternativas en función de múltiples criterios \citep{sahoo2023, taherdoost2023}. Estos métodos han sido ampliamente utilizados en diversas áreas como la ingeniería, la economía, la planificación estratégica y la gestión de recursos.
+
+Los \ac{MCDM} pueden clasificarse en dos grandes categorías:
+
+\begin{itemize}
+	\item \textbf{Métodos de compensación}: Permiten la sustitución de un criterio por otro. Ejemplos incluyen \ac{AHP} y \ac{TOPSIS} \citep{velasquez2013}.
+	
+	\item \textbf{Métodos de no compensación}: No permiten compensaciones directas entre criterios. Ejemplos incluyen \ac{ELECTRE} y \ac{PROMETHEE} \citep{guitouni1998}.
+\end{itemize}
+
+\subsection{AHP (Analytic Hierarchy Process)}
+
+El Proceso Analítico Jerárquico (\ac{AHP}), desarrollado por Thomas L. Saaty en 1980, es un método de toma de decisiones multicriterio que descompone un problema de decisión en una jerarquía de criterios y alternativas \citep{saaty1980}. Este método es ampliamente utilizado debido a su capacidad para manejar tanto criterios cuantitativos como cualitativos.
+
+\textbf{Algoritmo AHP:}
+
+\begin{enumerate}
+	\item \textbf{Definir la jerarquía del problema}: El problema se descompone en una jerarquía que incluye objetivo principal, criterios y alternativas.
+	
+	\item \textbf{Construir matrices de comparación por pares}: Se construyen matrices de comparación por pares para cada nivel de la jerarquía usando la escala de Saaty de 1 a 9.
+	
+	\item \textbf{Calcular los valores propios}: Para cada matriz de comparación, se calculan los valores propios mediante la ecuación:
+	\[A \cdot w = \lambda_{\max} \cdot w\]
+	donde $A$ es la matriz de comparación, $w$ es el vector de pesos, y $\lambda_{\max}$ es el mayor valor propio.
+	
+	\item \textbf{Evaluar las alternativas}: Los pesos de los criterios se utilizan para evaluar y priorizar las alternativas.
+	
+	\item \textbf{Verificar la consistencia}: Se verifica la consistencia mediante el índice de consistencia:
+	\[CI = \frac{\lambda_{\max} - n}{n - 1}\]
+	\[CR = \frac{CI}{RI}\]
+	donde $n$ es el número de criterios y $RI$ es el índice aleatorio.
+\end{enumerate}
+
+Las aplicaciones recientes del método \ac{AHP} incluyen evaluación de tecnologías emergentes en manufactura avanzada \citep{halicka2020}, gestión de cadenas de suministro post-pandemia \citep{kumar2021}, y selección de sitios para instalaciones de energía renovable \citep{mohamed2024}.
+
+\subsection{Método TOPSIS}
+
+El método \ac{TOPSIS} (Technique for Order Preference by Similarity to Ideal Solution) selecciona la alternativa más cercana a una solución ideal y más alejada de una solución anti-ideal \citep{hwang1981}.
+
+\textbf{Algoritmo TOPSIS:}
+
+\begin{enumerate}
+	\item \textbf{Normalizar la matriz de decisión}: Se normaliza mediante la fórmula:
+	\[r_{ij} = \frac{d_{ij}}{\sqrt{\sum_{i=1}^{m} d_{ij}^2}}\]
+	
+	\item \textbf{Ponderar la matriz}: Se multiplica cada valor normalizado por el peso correspondiente:
+	\[v_{ij} = w_{j} \cdot r_{ij}\]
+	
+	\item \textbf{Determinar las soluciones ideal y anti-ideal}: Se determinan $v_{j}^{+}$ y $v_{j}^{-}$ para cada criterio.
+	
+	\item \textbf{Calcular distancias}: Se calculan las distancias euclideas:
+	\[d_{i}^{+} = \sqrt{\sum_{j=1}^{n} (v_{ij} - v_{j}^{+})^2}\]
+	\[d_{i}^{-} = \sqrt{\sum_{j=1}^{n} (v_{ij} - v_{j}^{-})^2}\]
+	
+	\item \textbf{Calcular el índice de similitud}:
+	\[C_{i} = \frac{d_{i}^{-}}{d_{i}^{+} + d_{i}^{-}}\]
+	
+	\item \textbf{Ordenar las alternativas}: Se ordenan según sus valores de $C_{i}$.
+\end{enumerate}
+
+El método \ac{TOPSIS} ha encontrado aplicaciones en evaluación de tecnologías emergentes \citep{aloini2024}, sistemas de información hospitalaria \citep{radenovic2023}, y selección de materiales sostenibles \citep{deloitte2025}.
+
+\subsection{Método ELECTRE}
+
+\ac{ELECTRE} (Elimination and Choice Expressing Reality) es una técnica que se basa en la superación de alternativas mediante comparaciones par a par \citep{roy1968}.
+
+\textbf{Algoritmo ELECTRE:}
+
+\begin{enumerate}
+	\item \textbf{Normalizar la matriz de decisión}: Se normaliza igual que en \ac{TOPSIS}.
+	
+	\item \textbf{Construir matrices de concordancia y discordancia}:
+	\[C_{ik} = \sum_{j \in J^{+}} w_{j}\]
+	\[D_{ik} = \max_{j \in J^{-}} \left( \frac{d_{kj} - d_{ij}}{\max_{i}(d_{ij}) - \min_{i}(d_{ij})} \right)\]
+	
+	\item \textbf{Aplicar umbrales}: Se definen umbrales de concordancia $(c)$ y discordancia $(d)$.
+	
+	\item \textbf{Determinar el ranking final}: Se construye un grafo de dominancia basado en las relaciones de superación.
+\end{enumerate}
+
+El método \ac{ELECTRE} ha sido aplicado en planificación energética regional \citep{yakici2023}, gestión de proyectos de construcción \citep{abastante2023}, y evaluación de desempeño \ac{ESG} \citep{majdi2023}.
+
+\subsection{Método PROMETHEE}
+
+\ac{PROMETHEE} (Preference Ranking Organization Method for Enrichment Evaluations) utiliza funciones de preferencia para comparar alternativas y generar un ranking \citep{behzadian2010}.
+
+\textbf{Algoritmo PROMETHEE:}
+
+\begin{enumerate}
+	\item \textbf{Definir funciones de preferencia}: Se establecen funciones para cada criterio.
+	\item \textbf{Calcular diferencias de preferencia}: Se calculan las diferencias entre alternativas.
+	\item \textbf{Obtener flujos de preferencia}: Se calculan flujos positivos y negativos.
+	\item \textbf{Ordenar alternativas}: Se ordenan según sus índices de preferencia neta.
+\end{enumerate}
+
+Las aplicaciones del método \ac{PROMETHEE} incluyen evaluación de tecnologías de generación limpia \citep{praene2023}, optimización en industrias intensivas en energía \citep{morais2024}, y selección de tecnologías de almacenamiento energético \citep{iea2024}.
+
+\subsection{Otros métodos}
+
+En la Tabla \ref{tab:otros_metodos} se presentan otros métodos importantes para la solución de problemas de toma de decisión:
+
+\begin{table}[H]
+	\centering
+	\captionbox{Otros métodos para la solución de problemas de toma de decisión\label{tab:otros_metodos}}
+	{
+		\begin{tabular}{|p{4cm}|p{6cm}|p{4cm}|}
+			\hline
+			\textbf{Método} & \textbf{Descripción} & \textbf{Referencias} \\
+			\hline
+			MAUT & Utiliza funciones de utilidad para modelar preferencias & Keeney \& Raiffa (1993) \\
+			\hline
+			VIKOR & Enfocado en la selección de una alternativa de compromiso & Opricovic \& Tzeng (2004) \\
+			\hline
+			MACBETH & Basado en comparaciones cualitativas & Bana e Costa \& Vansnick (1994) \\
+			\hline
+			DEMATEL & Analiza relaciones entre criterios & Gabus \& Fontela (1972) \\
+			\hline
+			MOORA & Optimización basada en relaciones & Brauers \& Zavadskas (2006) \\
+			\hline
+		\end{tabular}
+	}
+\end{table}
+
+\section{Sistemas de Soporte a la Decisión (DSS) con Múltiples Criterios}
+
+Los Sistemas de Soporte a la Decisión (\ac{DSS}) son herramientas computacionales diseñadas para asistir a los tomadores de decisiones en la resolución de problemas complejos y no estructurados \citep{morrison2023}. Estos sistemas combinan datos, modelos analíticos y tecnologías de visualización para facilitar la evaluación de alternativas en función de múltiples criterios.
+
+\subsection{Características Principales y Clasificaciones de los DSS}
+
+Los \ac{DSS} se distinguen por características clave que los hacen especialmente útiles en entornos empresariales \citep{kumar2024, cintra2023}:
+
+\begin{enumerate}
+	\item \textbf{Interactividad y Flexibilidad}: Los \ac{DSS} permiten a los usuarios interactuar con los datos de manera dinámica \citep{ahmed2024}.
+	
+	\item \textbf{Accesibilidad para usuarios no técnicos}: Están diseñados para ser utilizados por personas sin conocimientos técnicos avanzados \citep{akyol2024}.
+	
+	\item \textbf{Rapidez en el Procesamiento}: Utilizan bases de datos optimizadas y tecnologías de procesamiento en tiempo real \citep{zheng2024}.
+	
+	\item \textbf{Integración de Datos}: Los \ac{DSS} modernos integran datos de múltiples fuentes heterogéneas \citep{kumar2024}.
+	
+	\item \textbf{Personalización}: Cada usuario tiene acceso a información personalizada según su rol \citep{morrison2023}.
+	
+	\item \textbf{Análisis Histórico y Predictivo}: Los \ac{DSS} actuales incorporan algoritmos de aprendizaje automático \citep{wieckowski2023}.
+\end{enumerate}
+
+Los \ac{DSS} pueden clasificarse en diferentes tipos:
+
+\begin{itemize}
+	\item \textbf{DSS Basados en Datos}: Enfatizan el acceso y manipulación de grandes volúmenes de datos \citep{kumar2024}.
+	\item \textbf{DSS Basados en Modelos}: Proporcionan acceso a modelos estadísticos y de optimización \citep{cintra2023}.
+	\item \textbf{DSS Basados en Conocimiento}: Incorporan inteligencia artificial y sistemas expertos \citep{akyol2024}.
+	\item \textbf{DSS Basados en Documentos}: Gestionan información textual no estructurada \citep{ahmed2024}.
+	\item \textbf{DSS de Comunicación}: Facilitan la colaboración entre múltiples decisores \citep{morrison2023}.
+\end{itemize}
+
+\subsection{Análisis de sistemas homólogos}
+
+A continuación se presenta un análisis de varios \ac{DSS} utilizados en la actualidad para la toma de decisiones multicriterio:
+
+\textbf{Expert Choice}: Herramienta comercial desarrollada para facilitar la toma de decisiones en entornos empresariales, centrada específicamente en la implementación del método \ac{AHP} \citep{goepel2018implementation}.
+
+\textbf{DECERNS}: Plataforma web comercial desarrollada para el análisis multicriterio que integra funciones \ac{SIG} con varios métodos \ac{MCDM} incluyendo MAVT, \ac{AHP}, \ac{TOPSIS}, \ac{PROMETHEE} y MAUT \citep{yatsalo2015decerns}.
+
+\textbf{Visual PROMETHEE}: Herramienta especializada que implementa la metodología PROMETHEE-GAIA, caracterizada por sus capacidades de visualización avanzadas \citep{mareschal2023visual}.
+
+\textbf{Super Decisions}: Herramienta que implementa el Proceso Analítico Jerárquico (\ac{AHP}) y el Proceso Analítico en Red (\ac{ANP}) \citep{sakarya2023analytic}.
+
+\textbf{D-Sight}: Plataforma comercial basada en \ac{PROMETHEE} y GAIA que integra múltiples métodos \ac{MCDM} \citep{dsight2024}.
+
+En la Tabla \ref{tab:sistemas_homologos} se presenta un resumen de los sistemas estudiados:
+
+\begin{table}[H]
+	\centering
+	\captionbox{Resumen de los sistemas estudiados\label{tab:sistemas_homologos}}
+	{
+		\begin{tabular}{|p{2cm}|p{2.5cm}|p{2cm}|p{2cm}|p{2.5cm}|p{2.5cm}|}
+			\hline
+			\textbf{Sistema} & \textbf{Métodos} & \textbf{Nuevos Métodos} & \textbf{Licencia} & \textbf{Incertidumbre} & \textbf{Sensibilidad} \\
+			\hline
+			Expert Choice & AHP & No & Comercial & No & Sí \\
+			\hline
+			DECERNS & AHP, TOPSIS, PROMETHEE & Sí & Comercial & Sí & Sí \\
+			\hline
+			Visual PROMETHEE & PROMETHEE I, II & No & Gratuito & No & Básico \\
+			\hline
+			Super Decisions & ANP & No & Comercial & No & Avanzado \\
+			\hline
+			D-Sight & PROMETHEE, AHP & Sí & Comercial & Sí & Avanzado \\
+			\hline
+		\end{tabular}
+	}
+\end{table}
+
+El análisis de los sistemas homólogos evidencia limitaciones que justifican el desarrollo de una nueva solución: fragmentación en el panorama de herramientas \ac{MCDM}, factor económico como barrera considerable, y ausencia de plataformas verdaderamente integradas para comparación sistemática de resultados.
+
+\section{Herramientas, Metodologías y Lenguajes de Desarrollo}
+
+Para el desarrollo de la propuesta solución se decidió crear un sistema basado en una plataforma de software utilizando el lenguaje Python. Las herramientas seleccionadas son:
+
+\textbf{Visual Studio Code}: Se seleccionó como \ac{IDE} debido a que es una herramienta gratuita, ligera y altamente personalizable \citep{hunt2023vscode}. Es compatible con múltiples lenguajes de programación y sistemas operativos \citep{martin2023vscode}.
+
+\textbf{Visual Paradigm}: Herramienta \ac{CASE} que brinda un conjunto de ayudas para el desarrollo de programas informáticos \citep{sommerville2023software}. Soporta el ciclo de vida completo del proceso de desarrollo de software \citep{fowler2023uml}.
+
+\textbf{Lenguaje UML}: Estándar adoptado a nivel internacional para crear esquemas, diagramas y documentación relativa a los desarrolladores de software \citep{pilone2023uml}.
+
+\textbf{Lenguaje Python}: Lenguaje de programación de alto nivel, interpretado y multipropósito, conocido por su sintaxis clara y legible \citep{vanrossum2024python}. Es ampliamente utilizado en análisis de datos, inteligencia artificial y automatización \citep{mckinney2024pandas}.
+
+Las principales bibliotecas de Python utilizadas incluyen:
+
+\begin{enumerate}
+	\item \textbf{NumPy}: Biblioteca fundamental para la computación científica que proporciona soporte para matrices multidimensionales \citep{harris2023numpy}.
+	
+	\item \textbf{Pandas}: Ofrece estructuras de datos flexibles para manipulación de datos tabulares \citep{mckinney2024pandas}.
+	
+	\item \textbf{SciPy}: Complementa a NumPy con funciones adicionales para optimización y álgebra lineal \citep{virtanen2023scipy}.
+	
+	\item \textbf{Matplotlib y Seaborn}: Bibliotecas de visualización para crear gráficos estadísticos \citep{caswell2023matplotlib}.
+	
+	\item \textbf{Scikit-learn}: Proporciona herramientas para aprendizaje automático y minería de datos \citep{pedregosa2023sklearn}.
+\end{enumerate}
+
+\textbf{Metodología XP}
+
+Las metodologías de desarrollo de software son un conjunto de procedimientos y técnicas para el desarrollo de productos software \citep{pressman2024software, sommerville2023software}. Existen metodologías tradicionales que priorizan el control del proceso y metodologías ágiles que se enfocan en la colaboración con el cliente \citep{dingsøyr2023agile}.
+
+Extreme Programming (\ac{XP}) es una metodología ágil centrada en potenciar las relaciones interpersonales como clave para el éxito en el desarrollo de software \citep{beck2023xp}. \ac{XP} se basa en realimentación continua, comunicación fluida, simplicidad y coraje para enfrentar los cambios \citep{shore2023agile}.
+
+La metodología \ac{XP} tiene cuatro fases fundamentales:
+
+\begin{enumerate}
+	\item \textbf{Planeación}: Interacción con el cliente para descubrir y priorizar los requerimientos del sistema, documentados como historias de usuario \citep{cohn2004}.
+	
+	\item \textbf{Diseño}: Solo se diseñan las historias de usuario seleccionadas para la iteración actual, promoviendo diseño simple y refactoring continuo \citep{beck2023xp, fowler2023refactoring}.
+	
+	\item \textbf{Desarrollo}: Proceso colaborativo que incluye programación en parejas, integración continua y desarrollo guiado por pruebas \citep{williams2023pair, humble2023continuous, beck2023tdd}.
+	
+	\item \textbf{Pruebas}: Se implementan pruebas unitarias y de aceptación para validar el funcionamiento del software \citep{crispin2023agile}.
+\end{enumerate}
+
+Se decidió usar esta metodología debido a las ventajas que brindan sus características, como la disminución del tiempo de desarrollo sin afectar la calidad del producto \citep{highsmith2023agile}, y su enfoque en generar poca cantidad de artefactos centrados principalmente en el código \citep{beck2023xp}.
+
+\section*{Conclusiones parciales del capítulo}
+
+A partir del análisis y el estudio realizado se llegó a las consideraciones siguientes:
+
+\begin{itemize}
+	\item La toma de decisiones en contextos complejos requiere un enfoque estructurado y sistemático, especialmente cuando intervienen múltiples criterios, alternativas y expertos.
+	
+	\item Se analizaron los métodos \ac{AHP}, \ac{TOPSIS}, \ac{ELECTRE} y \ac{PROMETHEE}, determinando que cada uno posee aplicaciones óptimas específicas según el tipo de problema.
+	
+	\item Los \ac{DSS} son herramientas esenciales para la implementación de métodos \ac{MCDM} en entornos prácticos, destacando su capacidad para integrar datos, modelos analíticos y opiniones de expertos.
+	
+	\item Para lograr una mayor organización en el proceso de desarrollo se seleccionó Visual Paradigm como herramienta \ac{CASE}, el lenguaje \ac{UML} para el modelado del sistema y Python como lenguaje de programación.
+	
+	\item El desarrollo de la propuesta solución requiere el uso de un enfoque ágil, adoptando \ac{XP} como metodología dada su flexibilidad ante el cambio de requisitos y el manejo de riesgos.
+\end{itemize}

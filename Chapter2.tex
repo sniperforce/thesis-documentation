@@ -1,0 +1,572 @@
+\chapter{Análisis y diseño de la propuesta de Software OptiChoice}
+\label{chap:chapter2}
+
+Este capítulo tiene como objetivo principal presentar la modelación del software de apoyo a la decisión basado en \ac{MCDM}. Para ello, se emplearán los artefactos de la metodología de desarrollo seleccionada, los cuales serán fundamentales en la estructuración del sistema y en su posterior implementación. Se establecen los requisitos funcionales y no funcionales del sistema con la forma de Historias de Usuario, definiendo sus principales características con el objetivo de garantizar su correcto funcionamiento. Finalmente, se analizan los aspectos clave que influirán en la construcción del software, asegurando su eficiencia, escalabilidad y facilidad de uso.
+
+\section{Descripción del problema y modelo matemático asociado}
+
+Como se analizó en el primer capítulo, los procesos de toma de decisión son de suma importancia en el mundo actual, y la realización manual de cualquier método que le dé solución a los problemas de este tipo puede convertirse en un proceso engorroso (por la cantidad de información a manejar) y demorar demasiado tiempo en ejecutarlo (por los cálculos a realizar) \citep{steyvers2024}. La complejidad y tiempo de solución de estos problemas aumenta considerablemente cuando se tienen múltiples criterios y expertos. Existen casos en los que un proceso tiene vinculado volúmenes de información muy grandes, por lo que realizar el análisis del mismo de forma manual puede conllevar a cometer errores que repercutan en la decisión de la alternativa más adecuada y por tanto en la solución del problema.
+
+Desde un punto de vista matemático, un problema \ac{MCDM} puede representarse como un sistema en el que se busca optimizar una función objetivo considerando múltiples criterios que pueden ser de naturaleza cuantitativa o cualitativa \citep{vincke1992, zeleny1982}.
+
+El problema \ac{MCDM} se puede expresar formalmente de la siguiente manera \citep{roy1996}:
+
+Sea un conjunto finito de $m$ alternativas $A = \{ a_{1},a_{2},...,a_{m}\}$ y un conjunto de $n$ criterios de evaluación $C = \{ c_{1},c_{2},...,c_{n}\}$, donde cada alternativa $a_{i}$ es evaluada con respecto a cada criterio $c_{j}$ mediante una función de desempeño $f_{j}(a_{i})$ \citep{keeney1993}. Esto da lugar a una matriz de decisión $D$ de dimensión $m \times n$:
+
+\[
+D = \begin{bmatrix}
+	f_{1}(A_{1}) & f_{2}(A_{1}) & \ldots & f_{n}(A_{1}) \\
+	f_{1}(A_{2}) & f_{2}(A_{2}) & \ldots & f_{n}(A_{2}) \\
+	\vdots & \vdots & \ddots & \vdots \\
+	f_{1}(A_{m}) & f_{2}(A_{m}) & \ldots & f_{n}(A_{m})
+\end{bmatrix}
+\]
+
+Cada criterio puede tener diferentes unidades de medida y escalas, por lo que es común aplicar técnicas de normalización para homogeneizar los valores y hacerlos comparables \citep{hwang1981, triantaphyllou2000}.
+
+Existen varios tipos de criterios y funciones de agregación en los problemas de tipo \ac{MCDM}, los cuales podrían clasificarse en \citep{vincke1992}:
+
+\begin{itemize}
+	\item \textbf{Criterios de beneficio (+)}: aquellos cuya maximización es deseable (ej. rentabilidad, calidad, eficiencia).
+	\item \textbf{Criterios de costo (-)}: aquellos cuya minimización es preferida (ej. costos, tiempos de espera, impacto ambiental).
+\end{itemize}
+
+Para sintetizar la información de múltiples criterios en una única medida de evaluación, se emplean funciones de agregación \citep{keeney1993}. Una de las más utilizadas es la combinación lineal ponderada: 
+
+\[S(A_{i}) = \sum_{j=1}^{n} w_{j} \cdot f_{j}(A_{i})\]
+
+donde $w_{j}$ representa el peso asignado a cada criterio $C_{j}$, con la condición de que: 
+
+\[\sum_{j=1}^{n} w_{j} = 1 \text{ si } w_{j} \geq 0\]
+
+Los valores $w_{j}$ pueden ser determinados mediante métodos como el análisis jerárquico de procesos (\ac{AHP}) o técnicas de entropía para evitar sesgos en la ponderación \citep{saaty1980}.
+
+Dado que la asignación de pesos a los criterios puede influir significativamente en el resultado, el análisis de sensibilidad es una herramienta crucial en la toma de decisiones multicriterio \citep{triantaphyllou2000, ishizaka2011}. Se pueden emplear técnicas como:
+
+\begin{itemize}
+	\item \textbf{Variación de los pesos} $w_{j}$: Evaluar cómo cambian los resultados si se modifican los valores de peso \citep{vincke1992}.
+	\item \textbf{Simulación de Monte Carlo}: Generar múltiples escenarios con distribuciones probabilísticas para los pesos y evaluar la estabilidad de las soluciones \citep{zeleny1982}.
+	\item \textbf{Métodos de perturbación}: Aplicar pequeñas alteraciones a la matriz de decisión para analizar la robustez del modelo \citep{triantaphyllou2000}.
+\end{itemize}
+
+\section{Propuesta solución}
+
+A partir del modelo matemático anterior y utilizando las tecnologías y las herramientas que nos brindan las \ac{TIC} en la actualidad, se propone implementar un sistema que ayude a dar solución a los problemas de toma de decisión bajo múltiples criterios. Este sistema cumplirá con un grupo de funcionalidades definidas por Historias de Usuario que permitirán una fácil interacción de los expertos con el mismo, además de traer considerables mejoras a este tipo de procesos.
+
+La herramienta propuesta permitirá importar los datos de un problema de toma de decisión a partir de archivos que pueden ser excels, de tipo \ac{CSV} o \ac{JSON} creados o no por el usuario. Luego de que se carguen los datos del problema en la plataforma se le podrán realizar cambios al mismo y validar la información obtenida del archivo en un editor de problemas que dispone el sistema. El usuario puede elegir que método usar o si desea usar varios métodos para darle solución al problema de toma de decisión, puede también si lo desea una vez tenga su solución realizar comparaciones con otros métodos y ver cual le da un mejor resultado, y finalmente generar una serie de reportes que le brinda el sistema para analizar cuál o cuáles son las alternativas adecuadas para darle solución al problema. En la Figura \ref{fig:esquema_solucion} se muestra un esquema de la solución propuesta.
+
+\begin{figure}[H]
+	\centering
+	\captionbox{Esquema de la propuesta solución\label{fig:esquema_solucion}}
+	{\includegraphics[width=0.7\textwidth]{Anexos/esquema1.jpg}}
+\end{figure}
+
+\section{Requisitos del Software}
+
+En la metodología \ac{XP} los requisitos de software están dados por las Historias de Usuarios de las cuales se pueden sacar los requisitos funcionales y no funcionales. Los requisitos funcionales son capacidades o condiciones que el sistema debe cumplir sin alterar la funcionalidad del producto. Los requisitos no funcionales son restricciones de los servicios o funciones ofrecidas por el sistema, pueden ser restricciones de tiempo, de los estándares a utilizar, de rendimiento, entre otros.
+
+\subsection{Historias de Usuario}
+
+Las Historias de Usuario (\ac{HU}) constituyen uno de los artefactos fundamentales en la metodología de desarrollo \ac{XP}, seleccionada para este proyecto. Representan una técnica de especificación de requisitos centrada en el cliente, donde se describen de manera concisa las funcionalidades que el sistema debe implementar. Como señala \citep{cohn2004}, estas historias son escritas por el cliente en su propio lenguaje, enfocándose en el valor que aporta cada funcionalidad al negocio sin entrar en detalles técnicos de implementación.
+
+Para la identificación de las Historias de Usuario del software \ac{MCDM}, se realizaron reuniones con expertos en toma de decisiones y potenciales usuarios del sistema. En estas sesiones se aplicaron técnicas de elicitación de requisitos como entrevistas, tormentas de ideas y análisis de escenarios de uso. El resultado fue un conjunto inicial de historias que posteriormente fueron refinadas y priorizadas.
+
+Como indica \citep{cohn2004}, las \ac{HU} deben seguir el principio INVEST (Independent, Negotiable, Valuable, Estimable, Small, Testable), garantizando así su calidad y viabilidad. Siguiendo este enfoque, cada historia identificada para el software OptiChoice fue evaluada y ajustada para cumplir con estos criterios.
+
+Para el desarrollo del software OptiChoice se identificaron un total de 17 Historias de Usuario, organizadas según las principales funcionalidades del sistema. A continuación, se presentan las más relevantes, el resto se puede encontrar en el \hyperlink{historias.usuario.completas}{Anexo de Historias de Usuario}:
+
+% Historia de Usuario 1 - Crear nuevo proyecto de decisión
+\begin{userstory}[hu:crear_proyecto]
+	\storyname{Crear nuevo proyecto de decisión}
+	\storyuser{Usuario del sistema}
+	\storyiter{1}
+	\storypriority{Alta}
+	\storyrisk{Medio}
+	\storypoints{8}
+	\storyprogrammer{Juan Diego Sera Rodríguez}
+	\storydescription{
+		El sistema permite crear un nuevo proyecto de decisión, especificando su nombre, descripción y decisor responsable. El proyecto sirve como contenedor para las alternativas, criterios y resultados de los métodos \ac{MCDM}.
+	}
+	\storyobservation{
+		\begin{itemize}
+			\item Debe permitir asignar un nombre único al proyecto
+			\item Debe almacenar la fecha de creación automáticamente
+			\item Debe asociar el proyecto a un usuario creador
+		\end{itemize}
+	}
+\end{userstory}
+
+% Historia de Usuario 2 - Gestionar proyectos existentes
+\begin{userstory}[hu:gestionar_proyectos]
+	\storyname{Gestionar proyectos existentes}
+	\storyuser{Usuario del sistema}
+	\storyiter{1}
+	\storypriority{Media}
+	\storyrisk{Medio}
+	\storypoints{10}
+	\storyprogrammer{Juan Diego Sera Rodríguez}
+	\storydescription{
+		El sistema permite listar, buscar, abrir, modificar y eliminar proyectos de decisión previamente creados. El usuario puede filtrar proyectos por nombre o fecha de creación.
+	}
+	\storyobservation{
+		\begin{itemize}
+			\item Debe mostrar la lista de proyectos con fecha de creación y modificación
+			\item Debe permitir búsquedas por nombre o descripción
+			\item Debe solicitar confirmación antes de eliminar un proyecto
+		\end{itemize}
+	}
+\end{userstory}
+
+% Historia de Usuario 3 - Gestionar alternativas
+\begin{userstory}[hu:gestionar_alternativas]
+	\storyname{Gestionar alternativas}
+	\storyuser{Usuario del sistema}
+	\storyiter{1}
+	\storypriority{Alta}
+	\storyrisk{Medio}
+	\storypoints{12}
+	\storyprogrammer{Juan Diego Sera Rodríguez}
+	\storydescription{
+		El sistema permite añadir, modificar y eliminar alternativas dentro de un proyecto de decisión. Cada alternativa debe tener un identificador único, un nombre descriptivo y puede incluir metadatos adicionales.
+	}
+	\storyobservation{
+		\begin{itemize}
+			\item Debe validar que el identificador sea único dentro del proyecto
+			\item Debe permitir añadir metadatos personalizados a cada alternativa
+			\item Debe actualizar la matriz de decisión al modificar alternativas
+		\end{itemize}
+	}
+\end{userstory}
+
+% Historia de Usuario 4 - Gestionar criterios de evaluación
+\begin{userstory}[hu:gestionar_criterios]
+	\storyname{Gestionar criterios de evaluación}
+	\storyuser{Usuario del sistema}
+	\storyiter{1}
+	\storypriority{Alta}
+	\storyrisk{Alto}
+	\storypoints{16}
+	\storyprogrammer{Juan Diego Sera Rodríguez}
+	\storydescription{
+		El sistema permite añadir, modificar y eliminar criterios de evaluación dentro de un proyecto. Cada criterio debe incluir un nombre, tipo de optimización (maximizar/minimizar), peso y escala (cuantitativa/cualitativa).
+	}
+	\storyobservation{
+		\begin{itemize}
+			\item Debe permitir especificar si es un criterio de beneficio o costo
+			\item Debe validar que los pesos sean valores positivos
+			\item Debe permitir normalizar los pesos automáticamente
+			\item Debe actualizar la matriz de decisión al modificar criterios
+		\end{itemize}
+	}
+\end{userstory}
+
+% Historia de Usuario 5 - Crear matriz de decisión
+\begin{userstory}[hu:crear_matriz]
+	\storyname{Crear matriz de decisión}
+	\storyuser{Usuario del sistema}
+	\storyiter{2}
+	\storypriority{Alta}
+	\storyrisk{Alto}
+	\storypoints{20}
+	\storyprogrammer{Juan Diego Sera Rodríguez}
+	\storydescription{
+		El sistema permite crear y visualizar una matriz de decisión que relacione las alternativas con los criterios establecidos. El usuario puede ingresar los valores de evaluación de cada alternativa respecto a cada criterio.
+	}
+	\storyobservation{
+		\begin{itemize}
+			\item Debe mostrar una interfaz tipo tabla con alternativas en filas y criterios en columnas
+			\item Debe permitir edición directa de valores en la matriz
+			\item Debe validar el tipo de datos según la escala del criterio
+			\item Debe identificar visualmente el tipo de criterio (beneficio/costo)
+		\end{itemize}
+	}
+\end{userstory}
+
+% Historia de Usuario 6 - Importar datos de matriz de decisión
+\begin{userstory}[hu:importar_datos]
+	\storyname{Importar datos de matriz de decisión}
+	\storyuser{Usuario del sistema}
+	\storyiter{2}
+	\storypriority{Media}
+	\storyrisk{Alto}
+	\storypoints{16}
+	\storyprogrammer{Juan Diego Sera Rodríguez}
+	\storydescription{
+		El sistema permite importar datos para la matriz de decisión desde archivos externos (Excel, \ac{CSV}, \ac{JSON}) facilitando la carga masiva de información.
+	}
+	\storyobservation{
+		\begin{itemize}
+			\item Debe admitir formatos Excel (.xlsx), \ac{CSV} y \ac{JSON}
+			\item Debe permitir mapear columnas del archivo con criterios definidos
+			\item Debe validar la consistencia de los datos importados
+			\item Debe notificar errores específicos durante la importación
+		\end{itemize}
+	}
+\end{userstory}
+
+% Historia de Usuario 7 - Ejecutar método AHP
+\begin{userstory}[hu:ejecutar_ahp]
+	\storyname{Ejecutar método AHP}
+	\storyuser{Usuario del sistema}
+	\storyiter{3}
+	\storypriority{Alta}
+	\storyrisk{Alto}
+	\storypoints{24}
+	\storyprogrammer{Juan Diego Sera Rodríguez}
+	\storydescription{
+		El sistema permite aplicar el método \ac{AHP} (Analytic Hierarchy Process) sobre la matriz de decisión, generando matrices de comparación por pares, calculando pesos relativos y verificando la consistencia de los juicios.
+	}
+	\storyobservation{
+		\begin{itemize}
+			\item Debe permitir ingresar comparaciones por pares entre criterios
+			\item Debe calcular el ratio de consistencia y alertar si supera el umbral (0.1)
+			\item Debe calcular el vector de prioridades (eigenvector) para los criterios
+			\item Debe generar el ranking final de alternativas según la evaluación \ac{AHP}
+		\end{itemize}
+	}
+\end{userstory}
+
+% Historia de Usuario 8 - Ejecutar método TOPSIS
+\begin{userstory}[hu:ejecutar_topsis]
+	\storyname{Ejecutar método TOPSIS}
+	\storyuser{Usuario del sistema}
+	\storyiter{3}
+	\storypriority{Alta}
+	\storyrisk{Medio}
+	\storypoints{16}
+	\storyprogrammer{Juan Diego Sera Rodríguez}
+	\storydescription{
+		El sistema permite aplicar el método \ac{TOPSIS} (Technique for Order of Preference by Similarity to Ideal Solution) sobre la matriz de decisión, calculando las soluciones ideales, distancias y coeficientes de similitud.
+	}
+	\storyobservation{
+		\begin{itemize}
+			\item Debe normalizar la matriz de decisión según el método seleccionado
+			\item Debe calcular las soluciones ideal positiva y negativa para cada criterio
+			\item Debe calcular las distancias euclideas y el coeficiente de proximidad relativa
+			\item Debe generar el ranking de alternativas según los coeficientes calculados
+		\end{itemize}
+	}
+\end{userstory}
+
+% Historia de Usuario 9 - Visualizar resultados comparativos
+\begin{userstory}[hu:visualizar_resultados]
+	\storyname{Visualizar resultados comparativos}
+	\storyuser{Usuario del sistema}
+	\storyiter{4}
+	\storypriority{Alta}
+	\storyrisk{Alto}
+	\storypoints{20}
+	\storyprogrammer{Juan Diego Sera Rodríguez}
+	\storydescription{
+		El sistema permite visualizar y comparar los resultados obtenidos con diferentes métodos \ac{MCDM}, mostrando rankings, puntuaciones y diferencias entre métodos.
+	}
+	\storyobservation{
+		\begin{itemize}
+			\item Debe mostrar una vista tabular con rankings por cada método
+			\item Debe generar gráficos de barras para comparar puntuaciones entre alternativas
+			\item Debe calcular y mostrar coeficientes de correlación entre métodos distintos
+			\item Debe identificar gráficamente la alternativa óptima según cada método
+		\end{itemize}
+	}
+\end{userstory}
+
+% Historia de Usuario 10 - Realizar análisis de sensibilidad
+\begin{userstory}[hu:analisis_sensibilidad]
+	\storyname{Realizar análisis de sensibilidad}
+	\storyuser{Usuario del sistema}
+	\storyiter{4}
+	\storypriority{Media}
+	\storyrisk{Alto}
+	\storypoints{24}
+	\storyprogrammer{Juan Diego Sera Rodríguez}
+	\storydescription{
+		El sistema permite realizar análisis de sensibilidad modificando los pesos de los criterios o los valores de la matriz de decisión, para evaluar la robustez de los resultados obtenidos.
+	}
+	\storyobservation{
+		\begin{itemize}
+			\item Debe permitir modificar interactivamente los pesos de los criterios
+			\item Debe recalcular automáticamente los resultados al modificar parámetros
+			\item Debe generar gráficos que muestren cómo varía el ranking según cambios en los pesos
+			\item Debe calcular indicadores de estabilidad de los resultados
+		\end{itemize}
+	}
+\end{userstory}
+
+Las Historias de Usuario fueron estimadas utilizando el método de Planning Poker, donde el equipo de desarrollo asignó tiempos de implementación basados en la complejidad percibida y la experiencia previa en desarrollos similares. Siguiendo las recomendaciones de \citep{cohn2004}, se consideraron factores como la complejidad técnica, el nivel de incertidumbre y la interdependencia entre historias.
+
+\subsection{Plan de Iteraciones}
+
+Las 17 Historias de Usuario identificadas se organizaron en 4 iteraciones de desarrollo, siguiendo un enfoque incremental que prioriza las funcionalidades centrales del sistema:
+
+\textbf{Iteración 1:} Enfocada en la gestión básica de proyectos, alternativas y criterios (HU 1-4).
+\begin{itemize}
+	\item HU1: Crear nuevo proyecto de decisión
+	\item HU2: Gestionar proyectos existentes
+	\item HU3: Gestionar alternativas
+	\item HU4: Gestionar criterios de evaluación
+\end{itemize}
+
+\textbf{Iteración 2:} Centrada en la construcción e importación de la matriz de decisión (HU 5-8).
+\begin{itemize}
+	\item HU5: Crear matriz de decisión
+	\item HU6: Importar datos de matriz de decisión
+	\item HU11: Validar datos de matriz
+	\item HU12: Exportar matriz de decisión
+\end{itemize}
+
+\textbf{Iteración 3:} Dedicada a la implementación de los métodos \ac{MCDM} (HU 7-8, 13-15).
+\begin{itemize}
+	\item HU7: Ejecutar método \ac{AHP}
+	\item HU8: Ejecutar método \ac{TOPSIS}
+	\item HU13: Ejecutar método \ac{ELECTRE}
+	\item HU14: Ejecutar método \ac{PROMETHEE}
+	\item HU15: Configurar parámetros de métodos
+\end{itemize}
+
+\textbf{Iteración 4:} Orientada al análisis de resultados, visualización y exportación (HU 9-10, 16-17).
+\begin{itemize}
+	\item HU9: Visualizar resultados comparativos
+	\item HU10: Realizar análisis de sensibilidad
+	\item HU16: Generar reportes de resultados
+	\item HU17: Exportar resultados a formatos externos
+\end{itemize}
+
+% Tabla resumen de iteraciones
+\begin{effortestimation}[tb:distribucion_hu]
+	\addentry[1]{Crear nuevo proyecto de decisión}{8} 
+	\addentry[1]{Gestionar proyectos existentes}{10} 
+	\addentry[1]{Gestionar alternativas}{12} 
+	\addentry[1]{Gestionar criterios de evaluación}{16}
+	\addentry[2]{Crear matriz de decisión}{20} 
+	\addentry[2]{Importar datos de matriz de decisión}{16} 
+	\addentry[2]{Validar datos de matriz}{14} 
+	\addentry[2]{Exportar matriz de decisión}{12}
+	\addentry[3]{Ejecutar método AHP}{24} 
+	\addentry[3]{Ejecutar método TOPSIS}{16} 
+	\addentry[3]{Ejecutar método ELECTRE}{20} 
+	\addentry[3]{Ejecutar método PROMETHEE}{18}
+	\addentry[3]{Configurar parámetros de métodos}{16}
+	\addentry[4]{Visualizar resultados comparativos}{20} 
+	\addentry[4]{Realizar análisis de sensibilidad}{24} 
+	\addentry[4]{Generar reportes de resultados}{22}
+	\addentry[4]{Exportar resultados a formatos externos}{14}
+\end{effortestimation}
+
+Este enfoque de planificación permite entregas incrementales de valor al cliente, siguiendo los principios de \ac{XP}, donde cada iteración produce un incremento funcional del sistema que puede ser evaluado por los usuarios finales.
+
+\section{Tarjetas CRC}
+
+Las tarjetas \ac{CRC} (Clase-Responsabilidad-Colaborador) constituyen un artefacto fundamental en la metodología \ac{XP} para el diseño de soluciones orientadas a objetos. Tal como señala \citep{shore2023agile}, estas tarjetas permiten identificar y organizar las clases que conforman el sistema, sus responsabilidades específicas y las colaboraciones necesarias con otras clases para cumplir dichas responsabilidades.
+
+Durante el análisis y diseño del software \ac{MCDM} propuesto, se identificaron un grupo de clases que aunque no tienen responsabilidades son usadas para contener información indispensable para el funcionamiento del sistema, estas son Alternative, Criteria, Result y DecisionMatrix. Se definió también una clase interfaz MCDMMethodInterface, esta es la clase que debe implementar cada uno de los métodos de solución que se incluyan en el sistema y contiene las funcionalidades que deben definir los mismos.
+
+A continuación se muestran las tarjetas \ac{CRC} de las clases Project y AHPMethod, el resto de las tarjetas se pueden consultar en el \hyperlink{tarjetas.crc.completas}{Anexo de Tarjetas CRC}:
+
+% Tarjeta CRC de la clase Project
+\begin{crccard}[crc:project]
+	\crcclass{Project}
+	\crcresp
+	{
+		\begin{itemize}
+			\item Crear un nuevo proyecto (Inicializa un proyecto con nombre, descripción y decisor)
+			\item Adicionar alternativa (Incorpora una nueva alternativa al proyecto)
+			\item Adicionar criterio (Incorpora un nuevo criterio de evaluación al proyecto)
+			\item Crear matriz de decisión (Genera la matriz de evaluación para el proyecto)
+			\item Agregar resultado (Almacena el resultado de aplicar un método \ac{MCDM})
+			\item Comparar métodos (Realiza una comparación entre resultados de diferentes métodos)
+			\item Obtener alternativa por ID (Recupera una alternativa específica)
+			\item Obtener criterio por ID (Recupera un criterio específico)
+			\item Obtener mejor alternativa (Identifica la alternativa con mayor puntuación)
+		\end{itemize}
+	}
+	\crccolab
+	{
+		Alternative\\
+		Criteria\\
+		DecisionMatrix\\
+		Result
+	}
+\end{crccard}
+
+% Tarjeta CRC de la clase AHPMethod
+\begin{crccard}[crc:ahp_method]
+	\crcclass{AHPMethod}
+	\crcresp
+	{
+		\begin{itemize}
+			\item Inicializar método (Configura el método \ac{AHP})
+			\item Calcular pesos de criterios (Determina la importancia relativa de los criterios)
+			\item Calcular prioridades de alternativas (Evalúa alternativas mediante comparaciones)
+			\item Calcular pesos desde matriz de comparación (Obtiene eigenvector principal)
+			\item Calcular aproximación de pesos (Calcula media geométrica de filas)
+			\item Verificar consistencia (Evalúa la coherencia de las comparaciones)
+			\item Ejecutar método (Aplica el algoritmo completo \ac{AHP})
+		\end{itemize}
+	}
+	\crccolab
+	{
+		MCDMMethodInterface\\
+		DecisionMatrix\\
+		Result
+	}
+\end{crccard}
+
+\section{Arquitectura de Software}
+
+La arquitectura de software constituye un elemento esencial en el diseño de sistemas informáticos, representando la estructura fundamental que proporciona una visión holística de los componentes del sistema y sus interrelaciones. Según \citep{bass2023software}, la arquitectura de software puede definirse como ``el conjunto de estructuras necesarias para razonar sobre el sistema, que comprende los elementos de software, las relaciones entre ellos y las propiedades de ambos''.
+
+Esta estructura organizativa no solo proporciona un marco para el desarrollo e implementación del sistema, sino que también establece los lineamientos que determinan sus cualidades de calidad. Como señala \citep{gorton2023essential}, una arquitectura bien diseñada facilita el cumplimiento de requisitos no funcionales como escalabilidad, rendimiento, seguridad y mantenibilidad, mientras optimiza la utilización de recursos técnicos y humanos.
+
+\subsection{Arquitectura N capas}
+
+La arquitectura seleccionada para el software \ac{MCDM} se fundamenta en el modelo de N capas, específicamente estructurado en tres niveles de abstracción claramente diferenciados que favorecen la modularidad y el desacoplamiento de responsabilidades. Esta arquitectura, como señala \citep{bass2023software}, proporciona una separación lógica de componentes que facilita el desarrollo, mantenimiento y evolución del sistema, permitiendo que los cambios en un nivel tengan un impacto mínimo en los demás.
+
+La solución desarrollada implementa las siguientes capas, cada una con responsabilidades específicas:
+
+\begin{enumerate}
+	\item \textbf{Capa de presentación (Vista)}: Constituye la interfaz con la que interactúa el usuario, incorporando formularios para la definición de proyectos, gestión de alternativas y criterios, configuración de métodos y visualización de resultados. Esta capa está desarrollada utilizando componentes gráficos de Python, específicamente implementados para proveer una experiencia de usuario intuitiva y cohesiva. Los elementos visuales se comunican exclusivamente con la capa de negocio, transmitiendo las solicitudes del usuario y presentando la información procesada.
+	
+	\item \textbf{Capa de negocio (Controlador y Aplicación)}: Representa el núcleo funcional del sistema, donde se implementa la lógica que procesa las peticiones procedentes de la capa de presentación. Está conformada por:
+	\begin{itemize}
+		\item Controladores que coordinan el flujo de información
+		\item Servicios especializados para cada dominio funcional (ProjectService, DecisionService)
+		\item Implementaciones de los métodos \ac{MCDM} (AHPMethod, TOPSISMethod, ELECTREMethod, PROMETHEEMethod)
+		\item Validadores que garantizan la integridad de los datos
+	\end{itemize}
+	
+	\item \textbf{Capa de datos (Modelo y Persistencia)}: Gestiona el acceso a datos y la persistencia de la información, comprendiendo:
+	\begin{itemize}
+		\item Entidades del dominio (Project, Alternative, Criteria, DecisionMatrix, Result)
+		\item Repositorios que abstraen las operaciones de almacenamiento y recuperación
+		\item Mecanismos de importación/exportación para diversos formatos (\ac{JSON}, Excel, \ac{CSV}, \ac{PDF})
+	\end{itemize}
+\end{enumerate}
+
+Esta organización permite una clara separación entre la interfaz de usuario, la lógica de negocio y la gestión de datos, lo que resulta particularmente beneficioso para un sistema \ac{MCDM} donde los métodos de análisis pueden variar o extenderse sin afectar la experiencia del usuario o la estructura de datos subyacente.
+
+\subsection{Patrón Arquitectónico MVC}
+
+El patrón arquitectónico Modelo-Vista-Controlador (\ac{MVC}) constituye uno de los fundamentos del diseño estructural del software \ac{MCDM} propuesto. Este patrón, como señala \citep{pressman2024software}, proporciona una solución demostrada para el problema recurrente de separación de responsabilidades en aplicaciones interactivas, dividiendo el sistema en tres componentes claramente diferenciados.
+
+La implementación del patrón \ac{MVC} en el sistema de soporte a la decisión multicriterio se estructura utilizando un Modelo el cual representa la capa de datos y la lógica de negocio asociada a la información del sistema. La vista, la cual constituye la interfaz de usuario que presenta la información y captura las interacciones, ya sea con formularios, editores, entre otros, y el Controlador que actúa como intermediario entre el modelo y la vista, gestionando el flujo de información y las operaciones del sistema, en el caso de este trabajo tenemos el MainController como orquestador principal.
+
+\begin{figure}[H]
+	\centering
+	\captionbox{Patrón Modelo-Vista-Controlador\label{fig:patron_mvc}}
+	{\includegraphics[width=0.7\textwidth]{Anexos/patronmvc.jpg}}
+\end{figure}
+
+\section{Patrones de diseño}
+
+Se considera que en el desarrollo de un sistema informático es de buena práctica utilizar patrones de diseño, ya que facilitan el trabajo y aportan una mayor organización y claridad en la estructura de la aplicación. Para el desarrollo del sistema se emplearon los patrones de diseño en la definición de las clases y el diseño del sistema.
+
+\subsection{Patrones GRASP (Patrones de Software para la Asignación General de Responsabilidad)}
+
+Los patrones \ac{GRASP} (General Responsibility Assignment Software Patterns) constituyen un conjunto de principios fundamentales para la asignación de responsabilidades a clases y objetos en un diseño orientado a objetos. Como señala \citep{larman2023applying}, estos patrones funcionan como guías para diseñar software que sea más mantenible, extensible y comprensible. En el desarrollo del software \ac{MCDM} propuesto, se aplicaron varios de estos patrones para garantizar un diseño robusto.
+
+\subsubsection{Experto en Información}
+El patrón Experto en Información sugiere asignar responsabilidades a la clase que posee la información necesaria para cumplirlas. En nuestra solución, este patrón se aplicó de forma consistente:
+
+\begin{itemize}
+	\item La clase \texttt{DecisionMatrix} encapsula toda la lógica relacionada con la manipulación de valores de evaluación, incluyendo funciones para obtener y establecer valores, así como para normalizar la matriz.
+	\item Las clases de métodos \ac{MCDM} (como \texttt{AHPMethod}, \texttt{TOPSISMethod}) contienen los algoritmos específicos para sus respectivos enfoques de evaluación.
+	\item La clase \texttt{Project} gestiona la información relacionada con alternativas, criterios y resultados, siendo responsable de coordinar sus interacciones.
+\end{itemize}
+
+\subsubsection{Creador}
+El patrón Creador asigna la responsabilidad de crear instancias de una clase a otra clase. En nuestro sistema:
+
+\begin{itemize}
+	\item La clase \texttt{Project} crea instancias de \texttt{DecisionMatrix} mediante el método \texttt{create\_decision\_matrix()}.
+	\item \texttt{MCDMMethodFactory} implementa el patrón Factory para crear instancias de los diferentes métodos \ac{MCDM}, proporcionando un punto centralizado para la creación de estos objetos.
+	\item \texttt{MainController} coordina la creación de proyectos, alternativas y criterios, delegando en los servicios correspondientes.
+\end{itemize}
+
+\subsubsection{Controlador}
+El patrón Controlador asigna la responsabilidad de manejar eventos del sistema a clases no vinculadas a la interfaz de usuario. En el software \ac{MCDM}:
+
+\begin{itemize}
+	\item \texttt{MainController} actúa como punto de entrada principal para las solicitudes del usuario, coordinando el flujo entre la interfaz y los servicios.
+	\item \texttt{ProjectService} y \texttt{DecisionService} proporcionan operaciones especializadas para gestionar proyectos y ejecutar métodos de decisión, respectivamente.
+	\item Las clases controladoras no contienen lógica de presentación ni de dominio, manteniendo una clara separación de responsabilidades.
+\end{itemize}
+
+\subsubsection{Alta Cohesión}
+La Alta Cohesión busca mantener las clases enfocadas en un conjunto relacionado de responsabilidades. Este principio se evidencia en:
+
+\begin{itemize}
+	\item Las implementaciones de métodos \ac{MCDM} (como \texttt{AHPMethod} y \texttt{TOPSISMethod}) se concentran exclusivamente en los algoritmos específicos.
+	\item El módulo de normalización (\texttt{normalization.py}) agrupa funciones relacionadas con la transformación de datos.
+	\item Las entidades del dominio (\texttt{Alternative}, \texttt{Criteria}, \texttt{Result}) encapsulan comportamiento estrechamente relacionado con sus datos.
+	\item Los servicios están organizados por dominio funcional (proyectos, decisiones) en lugar de por operaciones técnicas.
+\end{itemize}
+
+\subsubsection{Bajo Acoplamiento}
+El Bajo Acoplamiento minimiza las dependencias entre clases, facilitando la modificación y extensión del sistema:
+
+\begin{itemize}
+	\item La interfaz \texttt{MCDMMethodInterface} permite que la lógica de ejecución de métodos no dependa de implementaciones concretas.
+	\item La abstracción \texttt{ProjectRepository} desacopla el acceso a datos de la lógica de negocio.
+	\item Los servicios como \texttt{DecisionService} interactúan con múltiples componentes sin crear dependencias directas entre ellos.
+	\item La arquitectura en capas establece límites claros de dependencia (presentación ? negocio ? datos).
+\end{itemize}
+
+\subsubsection{Polimorfismo}
+El principio de Polimorfismo se utiliza para manejar alternativas basadas en el tipo:
+
+\begin{itemize}
+	\item Todos los métodos \ac{MCDM} implementan la interfaz común \texttt{MCDMMethodInterface}, permitiendo que sean tratados de manera uniforme.
+	\item La estructura de clases para métodos \ac{MCDM} favorece la extensión mediante la adición de nuevas implementaciones sin modificar el código existente.
+	\item Las operaciones polimórficas como \texttt{execute()} y \texttt{validate\_parameters()} permiten comportamientos específicos para cada método.
+\end{itemize}
+
+\subsubsection{Fabricación Pura}
+El patrón de Fabricación Pura introduce clases que no representan conceptos del dominio pero que proporcionan servicios cohesivos:
+
+\begin{itemize}
+	\item \texttt{MCDMMethodFactory} no es un concepto del dominio de decisión multicriterio, pero proporciona un servicio cohesivo para la creación y gestión de métodos.
+	\item Las clases de utilidades como los validadores (\texttt{AlternativeValidator}, \texttt{CriteriaValidator}) ofrecen servicios de validación sin pertenecer al dominio central.
+	\item Los convertidores y normalizadores son fabricaciones puras que encapsulan lógica técnica separada del dominio.
+\end{itemize}
+
+\subsubsection{Indirección}
+El patrón de Indirección introduce objetos intermediarios para desacoplar componentes:
+
+\begin{itemize}
+	\item Los servicios (\texttt{ProjectService}, \texttt{DecisionService}) actúan como intermediarios entre los controladores y el modelo.
+	\item \texttt{FileProjectRepository} proporciona una capa de indirección entre la lógica de negocio y el sistema de archivos.
+	\item Los controladores median entre la interfaz de usuario y los servicios de aplicación.
+\end{itemize}
+
+\subsubsection{Variaciones Protegidas}
+Este patrón protege elementos de cambios en otros elementos, encapsulando comportamientos que podrían variar:
+
+\begin{itemize}
+	\item La interfaz común para métodos \ac{MCDM} protege al sistema de cambios en los algoritmos específicos.
+	\item Las abstracciones de repositorio protegen la lógica de negocio de cambios en los mecanismos de persistencia.
+	\item La serialización a formatos estándar (\ac{JSON}, \ac{CSV}) protege contra cambios en las estructuras de datos internas.
+\end{itemize}
+
+La aplicación sistemática de estos patrones \ac{GRASP} en el software OptiChoice ha contribuido significativamente a la calidad del diseño, facilitando la comprensión, mantenimiento y extensión del sistema. Como resultado, la incorporación de nuevos métodos \ac{MCDM} o la modificación de los existentes puede realizarse con un impacto mínimo en el resto del sistema, cumpliendo así con uno de los requisitos fundamentales identificados durante la fase de análisis.
+
+\section*{Conclusiones parciales del capítulo}
+
+A partir del análisis del sistema se arribaron a las siguientes conclusiones:
+
+\begin{itemize}
+	\item El modelado de los procesos de toma de decisiones multicriterio permitió identificar los subprocesos clave a ser soportados por el sistema: estructuración del problema, construcción de matrices, aplicación de métodos y análisis de resultados.
+	
+	\item La aplicación de la metodología \ac{XP} y la identificación de 17 Historias de Usuario facilitaron la traducción efectiva de necesidades del cliente en tareas ingenieriles concretas, organizadas en cuatro iteraciones incrementales.
+	
+	\item Las tarjetas \ac{CRC} diseñadas reflejan una estructura de clases cohesiva y con bajo acoplamiento, donde cada componente tiene responsabilidades bien definidas, siguiendo los principios de diseño orientado a objetos.
+	
+	\item La arquitectura N capas implementada proporciona una clara separación entre presentación, negocio y datos, facilitando el desarrollo independiente de componentes y la incorporación de nuevos métodos \ac{MCDM}.
+	
+	\item El patrón \ac{MVC} refuerza la organización arquitectónica, mejorando la mantenibilidad del sistema y separando efectivamente la lógica matemática de la presentación visual.
+	
+	\item La aplicación sistemática de patrones \ac{GRASP} ha mejorado la calidad del diseño, favoreciendo la alta cohesión, el bajo acoplamiento y la extensibilidad del sistema.
+	
+	\item Las interfaces y abstracciones diseñadas permiten la incorporación de nuevos métodos \ac{MCDM} sin modificar el código existente, cumpliendo con el requisito de extensibilidad.
+	
+	\item La propuesta solución implementada soporta adecuadamente criterios de diferentes tipos (beneficio/costo) y escalas, satisfaciendo los requisitos esenciales para un sistema de soporte a la decisión.
+\end{itemize}
